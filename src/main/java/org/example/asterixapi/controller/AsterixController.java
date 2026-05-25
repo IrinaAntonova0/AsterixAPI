@@ -52,6 +52,32 @@ public class AsterixController {
         return characterRepo.findAll();
     }
 
+    @GetMapping("/getcharacters/by")//localhost:8080/asterixapi/getcharacters/by?name=iri&age=23&profession=Bard
+    public List<CharacterRecord> getCharactersBy(
+                            @RequestParam(required = false) String name,
+                            @RequestParam(required = false) String age,
+                            @RequestParam(required = false) String profession) {
+
+        if(name!=null && !name.isEmpty()) {
+            return characterRepo.findAllByName(name);
+        }
+        if (age!=null && !age.isEmpty()) {
+            return characterRepo.findAllByAge(Integer.parseInt(age));
+        }
+        if (profession!=null && !profession.isEmpty()) {
+            return characterRepo.findAllByProfession(profession);
+        }
+        return characterRepo.findAll();
+    }
+
+    @GetMapping("/getaverageage/{profession}")
+    public Double getAverageAgeByProfession(@PathVariable String profession) {
+        return characterRepo.findAllByProfession(profession).stream()
+                .mapToInt(CharacterRecord::age)
+                .average()
+                .orElse(0.0);
+    }
+
     @PostMapping("/postcharacter")
     public Optional<CharacterRecord> postCharacter(@RequestBody CharacterRecord characterRecord){
         return Optional.of(characterRepo.insert(characterRecord));
