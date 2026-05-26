@@ -82,9 +82,15 @@ public class AsterixService {
             newID = this.characterRecordIdService.generateNewCharacterId();
         } while(this.characterRepo.existsById(newID));
 
-        CharacterRecord cr = new CharacterRecord(newID, characterRecorddto.name(), characterRecorddto.age(), characterRecorddto.profession());
+        CharacterRecord crn = CharacterRecord.builder()
+            .id(newID)
+                .name(characterRecorddto.name())
+                .age(characterRecorddto.age())
+                .profession(characterRecorddto.profession())
+                .build();
+        //CharacterRecord cr = new CharacterRecord(newID, characterRecorddto.name(), characterRecorddto.age(), characterRecorddto.profession());
 
-        return Optional.of(characterRepo.insert(cr));
+        return Optional.of(characterRepo.insert(crn));
     }
 
     public Optional<CharacterRecord> putCharacter(String id, CharacterRecordDTO characterRecordDTO) {
