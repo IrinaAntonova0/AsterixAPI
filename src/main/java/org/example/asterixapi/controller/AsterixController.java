@@ -1,5 +1,6 @@
 package org.example.asterixapi.controller;
 
+import org.example.asterixapi.dto.CharacterRecordDTO;
 import org.example.asterixapi.model.CharacterRecord;
 import org.example.asterixapi.service.AsterixService;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,11 @@ public class AsterixController {
         return asterixService.getCharacters();
     }
 
+    @GetMapping("/getcharacter/{id}")
+    public Optional<CharacterRecord> getCharacter(@PathVariable String id) {
+        return asterixService.getCharacterBy(id);
+    }
+
     @GetMapping("/getcharacters/by")//localhost:8080/asterixapi/getcharacters/by?name=iri&age=23&profession=Bard
     public List<CharacterRecord> getCharactersBy(
             @RequestParam(required = false) String name,
@@ -52,13 +58,13 @@ public class AsterixController {
     }
 
     @PostMapping("/postcharacter")
-    public Optional<CharacterRecord> postCharacter(@RequestBody CharacterRecord characterRecord){
-        return asterixService.postCharacter(characterRecord);
+    public Optional<CharacterRecord> postCharacter(@RequestBody CharacterRecordDTO characterRecordDTO){
+        return asterixService.postCharacter(characterRecordDTO);
     }
 
     @PutMapping("/putcharacter/{id}")
-    public Optional<CharacterRecord> putCharacter(@PathVariable String id, @RequestBody CharacterRecord characterRecord) {
-        return asterixService.putCharacter( id, characterRecord);
+    public Optional<CharacterRecord> putCharacter(@PathVariable String id, @RequestBody CharacterRecordDTO characterRecordDTO) {
+        return asterixService.putCharacter( id, characterRecordDTO);
     }
 
     @DeleteMapping("/deletecharacter/{id}")

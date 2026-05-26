@@ -1,5 +1,6 @@
 package org.example.asterixapi.service;
 
+import org.example.asterixapi.dto.CharacterRecordDTO;
 import org.example.asterixapi.model.CharacterRecord;
 import org.example.asterixapi.repository.CharacterRepo;
 import org.springframework.stereotype.Service;
@@ -13,9 +14,11 @@ import java.util.Optional;
 public class AsterixService {
 
     private final CharacterRepo characterRepo;
+    private final CharacterRecordIdService characterRecordIdService;
 
-    public AsterixService(CharacterRepo characterRepo) {
+    public AsterixService(CharacterRepo characterRepo, CharacterRecordIdService characterRecordIdService) {
         this.characterRepo = characterRepo;
+        this.characterRecordIdService = characterRecordIdService;
     }
 
     public static final List<CharacterRecord> CHARACTER_RECORDS = new ArrayList<>(
@@ -48,6 +51,10 @@ public class AsterixService {
         return characterRepo.findAll();
     }
 
+    public Optional<CharacterRecord> getCharacterBy(String id) {
+        return characterRepo.findById(id);
+    }
+
     public List<CharacterRecord> getCharactersBy( String name, String age, String profession) {
 
         if(name!=null && !name.isEmpty()) {
@@ -69,12 +76,25 @@ public class AsterixService {
                 .orElse(0.0);
     }
 
-    public Optional<CharacterRecord> postCharacter( CharacterRecord characterRecord){
-        return Optional.of(characterRepo.insert(characterRecord));
+    public Optional<CharacterRecord> postCharacter(CharacterRecordDTO characterRecorddto){
+        String newID = "";
+        do{
+            newID = this.characterRecordIdService.generateNewCharacterId();
+        } while(this.characterRepo.existsById(newID));
+
+        CharacterRecord cr = new CharacterRecord(newID, characterRecorddto.name(), characterRecorddto.age(), characterRecorddto.profession());
+
+        return Optional.of(characterRepo.insert(cr));
     }
 
-    public Optional<CharacterRecord> putCharacter(String id, CharacterRecord characterRecord) {
-        return Optional.of( characterRepo.existsById(id) ? characterRepo.save(characterRecord) : null );
+    public Optional<CharacterRecord> putCharacter(String id, CharacterRecordDTO characterRecordDTO) {
+        if(characterRepo.existsById(id)){
+            CharacterRecord crNew = new CharacterRecord(id, characterRecordDTO.name(), characterRecordDTO.age(), characterRecordDTO.profession());
+            return Optional.of(characterRepo.save(crNew));
+        }
+        else {
+            return Optional.empty();
+        }
     }
 
     public void deleteCharacter(String id) {
