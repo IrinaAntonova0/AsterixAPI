@@ -62,4 +62,8 @@ class AsterixServiceTest {
         verify(mockRepo, times(1)).existsById(anyString());
         verify(mockRepo, times(1)).insert(expectedCharacterRecord);
     }
+
+    @Test
+    void getCharacterBy() {
+    }
 }
